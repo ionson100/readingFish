@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:readingFish.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="280"
+        x:Class="readingFish.Views.ReferenceTextDialog"
+        x:DataType="vm:ReferenceTextViewModel"
+        Title="Добавление голоса"
+        Width="540" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <StackPanel Margin="20" Spacing="14">
+        <TextBlock Text="Имя голоса" FontSize="15" FontWeight="SemiBold" />
+        <TextBox Text="{Binding VoiceId}" PlaceholderText="myvoice" />
+
+        <TextBlock Text="Текст, произнесённый в записи" FontSize="15" FontWeight="SemiBold" />
+        <TextBox Text="{Binding Text}"
+                 AcceptsReturn="True" TextWrapping="Wrap"
+                 Height="90" VerticalContentAlignment="Top"
+                 PlaceholderText="Точный текст записи — влияет на качество клона" />
+
+        <TextBlock Text="{Binding ErrorText}" Foreground="#B3261E" FontSize="12"
+                   IsVisible="{Binding ErrorText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <TextBlock Text="Запись: 5–15 секунд чистой речи, без шума. Текст должен точно совпадать с записью."
+                   FontSize="12" Foreground="#801B1B1B" TextWrapping="Wrap" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="Отмена" Command="{Binding CancelCommand}" IsCancel="True" />
+            <Button Content="Сохранить" Command="{Binding SaveCommand}" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

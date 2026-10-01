@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:readingFish.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="500"
+             x:Class="readingFish.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="14" MaxWidth="620" HorizontalAlignment="Left">
+
+            <TextBlock Text="Сервер fish-speech" FontSize="16" FontWeight="SemiBold" />
+
+            <Grid ColumnDefinitions="*,Auto" >
+                <TextBox Grid.Column="0" PlaceholderText="http://127.0.0.1:8080"
+                         Text="{Binding ServerUrl}" />
+                <Button Grid.Column="1" Content="Проверить" Margin="8,0,0,0"
+                        Command="{Binding TestConnectionCommand}" />
+            </Grid>
+
+            <TextBlock Text="{Binding ServerStatus}" FontSize="12" Foreground="#801B1B1B" />
+
+            <Border Height="1" Background="#1A000000" Margin="0,6" />
+
+            <TextBlock Text="Параметры генерации" FontSize="16" FontWeight="SemiBold" />
+
+            <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Размер части текста" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="50" Maximum="5000" Increment="10"
+                               FormatString="0" Value="{Binding TargetPartChars}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Лимит токенов" VerticalAlignment="Center" Margin="0,8,0,0" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="64" Maximum="4096" Increment="64"
+                               FormatString="0" Value="{Binding MaxNewTokens}" Margin="0,8,0,0" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Temperature" VerticalAlignment="Center" Margin="0,8,0,0" />
+                <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                    <Slider Grid.Column="0" Minimum="0.1" Maximum="1.0" TickFrequency="0.05"
+                            IsSnapToTickEnabled="True" Value="{Binding Temperature}" />
+                    <TextBlock Grid.Column="1" Width="46" Text="{Binding Temperature, StringFormat='0.00'}"
+                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                </Grid>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Сохранить" Command="{Binding SaveCommand}" />
+                <Button Content="Открыть папку данных" Command="{Binding OpenAppFolderCommand}" />
+            </StackPanel>
+
+            <Border Height="1" Background="#1A000000" Margin="0,6" />
+
+            <TextBlock Text="Приложение поддерживает работу по сети. Укажите адрес удалённого сервера, например http://192.168.1.10:8080"
+                       FontSize="12" Foreground="#801B1B1B" TextWrapping="Wrap" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

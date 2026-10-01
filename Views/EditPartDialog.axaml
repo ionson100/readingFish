@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:readingFish.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="320"
+        x:Class="readingFish.Views.EditPartDialog"
+        x:DataType="vm:EditPartViewModel"
+        Title="{Binding Title}"
+        Width="600" Height="380"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,10" Spacing="2">
+            <TextBlock Text="После сохранения часть уйдёт на сервер заново, запись заменится,
+                               а result.wav пересоберётся."
+                       FontSize="12" Foreground="{DynamicResource MutedTextBrush}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <TextBox Grid.Row="1" Text="{Binding Text}"
+                 AcceptsReturn="True" TextWrapping="Wrap"
+                 VerticalContentAlignment="Top" />
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+            <TextBlock Grid.Column="0" Text="{Binding CharCount, StringFormat='Символов: {0}'}"
+                       VerticalAlignment="Center" FontSize="12" Foreground="#801B1B1B" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Content="Отмена" Command="{Binding CancelCommand}" IsCancel="True" />
+                <Button Content="Сохранить" Command="{Binding SaveCommand}" IsDefault="True" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

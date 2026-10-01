@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:readingFish.ViewModels"
+        xmlns:models="using:readingFish.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="440"
+        x:Class="readingFish.Views.CreateProjectDialog"
+        x:DataType="vm:CreateProjectViewModel"
+        Title="Новый проект"
+        Width="580" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <ScrollViewer>
+        <StackPanel Margin="20" Spacing="14">
+
+            <TextBlock Text="Исходный файл" FontSize="15" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding SourceFileName}" FontSize="13" Foreground="#801B1B1B" />
+
+            <TextBlock Text="Название проекта" FontSize="15" FontWeight="SemiBold" Margin="0,6,0,0" />
+            <TextBox Text="{Binding ProjectName}" PlaceholderText="Название проекта" />
+
+            <TextBlock Text="Голос" FontSize="15" FontWeight="SemiBold" Margin="0,6,0,0" />
+            <ComboBox ItemsSource="{Binding Voices}"
+                      SelectedValue="{Binding SelectedVoiceId}"
+                      SelectedValueBinding="{Binding Id}"
+                      HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="models:VoiceSample">
+                        <StackPanel>
+                            <TextBlock Text="{Binding DisplayName}" />
+                            <TextBlock Text="{Binding StatusText}" FontSize="11"
+                                       Foreground="#801B1B1B" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="Размер части текста (символов)"
+                           VerticalAlignment="Center" />
+                <NumericUpDown Grid.Column="1" Minimum="50" Maximum="5000" Increment="10"
+                               FormatString="0" Value="{Binding TargetChars}" />
+            </Grid>
+
+            <TextBlock FontSize="12" Foreground="#801B1B1B">
+                <Run Text="Будет создано частей: примерно " />
+                <Run Text="{Binding EstimatedParts}" />
+            </TextBlock>
+
+            <TextBlock Text="Предпросмотр текста" FontSize="15" FontWeight="SemiBold" Margin="0,6,0,0" />
+            <Border Background="#0AF4F4F4" CornerRadius="4" Padding="10" Height="120">
+                <ScrollViewer>
+                    <TextBlock Text="{Binding SourcePreview}"
+                               TextWrapping="Wrap" FontSize="12" />
+                </ScrollViewer>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,6,0,0">
+                <Button Content="Отмена" Command="{Binding CancelCommand}" IsCancel="True" />
+                <Button Content="Создать" Command="{Binding CreateCommand}" IsDefault="True"
+                        IsEnabled="{Binding !IsBusy}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

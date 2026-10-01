@@ -1,0 +1,236 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:readingFish.ViewModels"
+        xmlns:models="using:readingFish.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="620" d:DesignHeight="640"
+        x:Class="readingFish.Views.SynthesisOptionsDialog"
+        x:DataType="vm:SynthesisOptionsViewModel"
+        Title="Параметры синтеза"
+        Width="680" Height="700"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20" >
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" FontSize="12"
+                   Foreground="{DynamicResource MutedTextBrush}"
+                   Text="Параметры сохраняются в этом проекте и применяются к каждой его части.
+                          Границы соответствуют схеме сервера fish-speech: за их пределами сервер отклонит запрос." />
+
+        <ScrollViewer Grid.Row="1" Margin="0,12,0,0">
+            <StackPanel Spacing="14">
+
+                <!-- reference_id: выбор голоса проекта. Первым пунктом,
+                     потому что голос задаёт самый узнаваемый результат. -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="reference_id — референс голоса" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Запись, по которой модель учится подражать голосу. От него зависит,
+                                          кого вы услышите в первую очередь: тембр, интонации, произношение.
+                                          Голос должен существовать на сервере — приложение отправит его отсюда,
+                                          если запись есть локально." />
+
+                        <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding Voices}"
+                                  SelectedValue="{Binding SelectedVoiceId}"
+                                  SelectedValueBinding="{Binding Id}"
+                                  PlaceholderText="выберите голос">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="models:VoiceSample">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                        <TextBlock Text="{Binding StatusText}" FontSize="11"
+                                                   Foreground="{DynamicResource SubtleTextBrush}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#B3261E"
+                                   IsVisible="{Binding VoiceChanged}"
+                                   Text="Голос проекта изменится. Уже синтезированные части станут устаревшими:
+                                         их нужно перегенерировать." />
+
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource HintTextBrush}"
+                                   IsVisible="{Binding !HasVoices}"
+                                   Text="Список голосов пуст: на сервере нет ни одного референса. Добавьте голос
+                                         в разделе «Голоса»." />
+                    </StackPanel>
+                </Border>
+
+                <!-- chunk_length -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="chunk_length — длина текста за один проход"
+                                   FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Сколько символов модель обрабатывает за раз. Больше — меньше пауз и ровнее
+                                          интонация, но выше требования к памяти. Меньше — быстрее и экономнее,
+                                          но речь может распадаться на фрагменты." />
+                        <Grid ColumnDefinitions="*,Auto,Auto" >
+                            <NumericUpDown Grid.Column="0" Minimum="{Binding MinChunkLength}"
+                                           Maximum="{Binding MaxChunkLength}" Increment="10"
+                                           FormatString="0" Value="{Binding ChunkLength}" />
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="{DynamicResource SubtleTextBrush}"
+                                       Text="{Binding ChunkLengthRange}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- temperature -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="temperature — случайность" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Насколько свободно модель выбирает продолжение. Низкая — ровно и
+                                          предсказуемо, высокая — живее, но может уйти в шум и испортить ударения." />
+                        <Grid ColumnDefinitions="*,Auto" >
+                            <Grid Grid.Column="0" ColumnDefinitions="*,Auto">
+                                <Slider Minimum="{Binding MinTemperature}" Maximum="{Binding MaxTemperature}"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        Value="{Binding Temperature}" />
+                                <TextBlock Grid.Column="1" Width="46" Text="{Binding Temperature, StringFormat='0.00'}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </Grid>
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="{DynamicResource SubtleTextBrush}"
+                                       Text="{Binding TemperatureRange}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- top_p -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="top_p — отбор по вероятности (nucleus sampling)"
+                                   FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Модель рассматривает только самые вероятные варианты, пока их сумма
+                                          не наберёт эту долю. Ниже — строже и повторяемее, выше — свободнее.
+                                          Работает вместе с temperature." />
+                        <Grid ColumnDefinitions="*,Auto" >
+                            <Grid Grid.Column="0" ColumnDefinitions="*,Auto">
+                                <Slider Minimum="{Binding MinTopP}" Maximum="{Binding MaxTopP}"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        Value="{Binding TopP}" />
+                                <TextBlock Grid.Column="1" Width="46" Text="{Binding TopP, StringFormat='0.00'}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </Grid>
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="{DynamicResource SubtleTextBrush}"
+                                       Text="{Binding TopPRange}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- repetition_penalty -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="repetition_penalty — штраф за повторы"
+                                   FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Значение выше 1 наказывает модель за повторяющиеся слова. Помогает
+                                          против заикания и зацикливания на длинных фрагментах. Слишком большое
+                                          значение может сделать речь неестественно «разнообразной»." />
+                        <Grid ColumnDefinitions="*,Auto" >
+                            <Grid Grid.Column="0" ColumnDefinitions="*,Auto">
+                                <Slider Minimum="{Binding MinRepetitionPenalty}" Maximum="{Binding MaxRepetitionPenalty}"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        Value="{Binding RepetitionPenalty}" />
+                                <TextBlock Grid.Column="1" Width="46"
+                                           Text="{Binding RepetitionPenalty, StringFormat='0.00'}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </Grid>
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="{DynamicResource SubtleTextBrush}"
+                                       Text="{Binding RepetitionPenaltyRange}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- max_new_tokens -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="max_new_tokens — потолок токенов на часть"
+                                   FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Ограничивает длину одной части: если текст не уложился, генерация
+                                          обрывается. Слишком мало — часть будет срезана на середине,
+                                          слишком много — сервер будет считать впустую." />
+                        <Grid ColumnDefinitions="*,Auto" >
+                            <NumericUpDown Grid.Column="0" Minimum="{Binding MinMaxNewTokens}"
+                                           Maximum="{Binding MaxMaxNewTokens}" Increment="64"
+                                           FormatString="0" Value="{Binding MaxNewTokens}" />
+                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="{DynamicResource SubtleTextBrush}"
+                                       Text="{Binding MaxNewTokensRange}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- seed -->
+                <Border Background="#0AF4F4F4" CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="seed — зерно генератора" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Одно и то же зерно при прочих равных даёт одинаковый результат —
+                                          удобно, чтобы повторить удачный вариант. Оставьте поле пустым,
+                                          и сервер выберет зерно случайно (по умолчанию)." />
+                        <TextBox Text="{Binding SeedText}" PlaceholderText="пусто — сервер выберет сам" />
+                        <TextBlock Text="{Binding SeedError}" FontSize="12" Foreground="#B3261E"
+                                   TextWrapping="Wrap" IsVisible="{Binding SeedError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Height="1" Background="#1A000000" />
+
+                <!-- Флаги -->
+                <StackPanel Spacing="10">
+                    <CheckBox IsChecked="{Binding Normalize}" Content="normalize — нормализовать числа и сокращения" />
+                    <TextBlock TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource MutedTextBrush}" Margin="24,0,0,0"
+                               Text="Читает вслух числа и сокращения развёрнуто. Заметно помогает для английского
+                                      и китайского, для русского обычно безвредно." />
+
+                    <CheckBox IsChecked="{Binding UseMemoryCache}"
+                              Content="use_memory_cache — держать референс в памяти сервера" />
+                    <TextBlock TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource MutedTextBrush}" Margin="24,0,0,0"
+                               Text="Ускоряет повторные запросы с тем же голосом, но расходует видеопамять.
+                                      При off сервер перечитывает референс каждый раз." />
+
+                    <CheckBox IsChecked="{Binding BalancedLatency}"
+                              Content="latency: balanced — режим задержки" />
+                    <TextBlock TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource MutedTextBrush}" Margin="24,0,0,0"
+                               Text="Применяется сервером api.fish.audio. На локальном сервере fish-speech
+                                      обычно не оказывает влияния." />
+                </StackPanel>
+
+                <TextBlock Text="{Binding StatusHint}" FontSize="12"
+                           Foreground="{DynamicResource HintTextBrush}"
+                           TextWrapping="Wrap" IsVisible="{Binding StatusHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="0,14,0,0">
+            <Button Grid.Column="0" Content="По умолчанию" Command="{Binding ResetToDefaultsCommand}" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                <Button Content="Отмена" Command="{Binding CancelCommand}" IsCancel="True" />
+                <Button Content="Сохранить" Command="{Binding SaveCommand}" IsDefault="True" Classes="accent" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

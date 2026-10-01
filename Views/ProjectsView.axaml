@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:readingFish.ViewModels"
+             xmlns:models="using:readingFish.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             x:Class="readingFish.Views.ProjectsView"
+             x:DataType="vm:ProjectsViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+        <!-- Панель действий -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
+            <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" />
+            <Button Content="Обновить" Command="{Binding RefreshCommand}" />
+            <ProgressBar IsIndeterminate="True"
+                         Width="90" Height="4"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding IsBusy}" />
+        </StackPanel>
+
+        <!-- Список проектов -->
+        <Grid Grid.Row="1">
+            <TextBlock Text="{Binding EmptyMessage}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="15" Foreground="#801B1B1B"
+                       IsVisible="{Binding HasNoProjects}" />
+
+            <ListBox ItemsSource="{Binding Projects}"
+                     SelectedItem="{Binding SelectedProject}"
+                     IsVisible="{Binding HasProjects}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:Project">
+                        <Border Padding="12" Margin="0,0,0,6"
+                                Background="#10F4F4F4" CornerRadius="6">
+                            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,4">
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" />
+                                    <TextBlock FontSize="12" Foreground="#801B1B1B">
+                                        <Run Text="Голос:" /><Run Text="{Binding VoiceId}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="12" Foreground="#801B1B1B">
+                                        <Run Text="Части:" />
+                                        <Run Text="{Binding DoneParts}" />
+                                        <Run Text="/" />
+                                        <Run Text="{Binding TotalParts}" />
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                            Spacing="6" VerticalAlignment="Center">
+                                    <Button Content="Открыть"
+                                            Command="{Binding $parent[ListBox].((vm:ProjectsViewModel)DataContext).OpenProjectCommand}"
+                                            CommandParameter="{Binding}" />
+                                    <Button Content="Папка"
+                                            Command="{Binding $parent[ListBox].((vm:ProjectsViewModel)DataContext).OpenFolderCommand}"
+                                            CommandParameter="{Binding}" />
+                                    <Button Content="Удалить"
+                                            Command="{Binding $parent[ListBox].((vm:ProjectsViewModel)DataContext).DeleteProjectCommand}"
+                                            CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <TextBlock Grid.Row="2" Margin="0,12,0,0" FontSize="12" Foreground="#801B1B1B"
+                   Text="Проекты и аудио хранятся в ~/fishApp/projects" />
+    </Grid>
+</UserControl>

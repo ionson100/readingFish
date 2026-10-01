@@ -1,0 +1,32 @@
+# Сборка
+[Bb]in/
+[Oo]bj/
+[Dd]ist/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+.vscode/
+
+# Отладочные символы и логи: в дистрибутивы они не нужны
+*.pdb
+*.log
+
+# Данные приложения. По умолчанию лежат в ~/fishApp, но если путь
+# переопределён — не должно попадать в репозиторий.
+/fishApp/
+/projects/
+
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*.swp
+*~
